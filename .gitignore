@@ -1,0 +1,5 @@
+# 本地编译目录
+/build/
+
+# VSCode 配置
+/.vscode/
