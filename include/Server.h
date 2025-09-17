@@ -3,7 +3,6 @@
 #include "EpollPoller.h"
 #include "TcpConnection.h"
 #include "ThreadPool.h"
-#include "Logger.h"
 #include <unordered_map>
 #include <memory>
 #include <sys/socket.h>

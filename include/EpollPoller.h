@@ -2,7 +2,7 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 #include <vector>
-#include <stdexcept>
+
 
 
 class EpollPoller {
@@ -15,6 +15,7 @@ class EpollPoller {
     int wait(int timeoutMs);
     epoll_event* getEvents();
     private:
+    // epoll file descriptor
     int epfd{-1}; 
     std::vector<epoll_event> events;
 };

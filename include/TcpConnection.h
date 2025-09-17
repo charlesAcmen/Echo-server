@@ -18,5 +18,6 @@ class TcpConnection {
         std::function<void(const Ptr&)> onClose; // closed
     private:
         int fd{-1};
-        Buffer inBuf; Buffer outBuf;
+        Buffer inBuf; 
+        Buffer outBuf;
 };

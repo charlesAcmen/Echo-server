@@ -1,4 +1,5 @@
 #include "Logger.h"
+#include <iostream>
 void Logger::INFO(const std::string& msg) {
     std::cout << "[INFO] " << msg << std::endl;
 }
