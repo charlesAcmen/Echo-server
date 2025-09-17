@@ -15,6 +15,8 @@ class Buffer {
         std::string retrieveAsString(size_t len);
     private:
         void clear();
+
         std::vector<char> buf;
         size_t readIndex = 0;
+        size_t writeIndex = 0;
 };

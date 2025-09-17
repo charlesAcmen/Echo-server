@@ -1,4 +1,5 @@
 #include "Acceptor.h"  
+#include <iostream>
 Acceptor::Acceptor(uint16_t port){
     //create tcp socket,AF_INET:ipv4,SOCK_STREAM:tcp
     int fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -47,9 +48,10 @@ int Acceptor::acceptFd(){
     socklen_t len = sizeof(peer);
     //global namespace
     int conn = ::accept(listenFd, (struct sockaddr*)&peer, &len);
-    if(conn==-1) 
+    if(conn==-1){
         //no ready connections to accept
         return -1;
+    }
     setNonBlocking(conn);
     return conn;
 }

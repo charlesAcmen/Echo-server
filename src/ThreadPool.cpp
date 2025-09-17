@@ -1,5 +1,6 @@
 #include "ThreadPool.h"
 #include "Logger.h"
+#include <iostream>
 ThreadPool::ThreadPool(size_t n): stop(false) {
     for (size_t i=0;i<n;i++) 
         workers.emplace_back(

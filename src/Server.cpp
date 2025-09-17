@@ -1,5 +1,6 @@
 #include "Server.h"
 #include "Logger.h"
+#include <iostream>
 TcpServer::TcpServer(uint16_t port, size_t workerThreads)
         : acceptor(port), poller(), pool(workerThreads){
     //listenFd which is listening on socket
@@ -69,9 +70,10 @@ void TcpServer::handleAccept(){
         //EPOLLOUT: writable event
         //EPOLLIN: readable event
         poller.addFd(c, EPOLLIN | EPOLLET | EPOLLOUT);
-        if(onConnection) 
+        if(onConnection){
             //handle new connection
             onConnection(conn);
+        }
     }
 }
 //event distributing
@@ -79,11 +81,10 @@ void TcpServer::handleAccept(){
 void TcpServer::handleRead(const TcpConnection::Ptr& conn){
     pool.enqueue([this, conn]{
 
-
             char buf[4096];
             while(true){
                 //receive
-                ssize_t n = ::recv(conn->getFd(), buf, sizeof(buf), 0);
+                ssize_t n = ::recv(conn->getFd(), buf, sizeof(buf), 0); 
                 if(n>0){
                     //tcp is in stream,so first append 
                     conn->inputBuffer().append(buf, (size_t)n);
@@ -96,8 +97,9 @@ void TcpServer::handleRead(const TcpConnection::Ptr& conn){
                     break;
                 } else { 
                     //read all buffer
-                    if(errno==EAGAIN || errno==EWOULDBLOCK) 
+                    if(errno==EAGAIN || errno==EWOULDBLOCK){
                         break; 
+                    }
                     else { 
                         this->handleClose(conn);
                         break; 
@@ -114,16 +116,22 @@ void TcpServer::handleRead(const TcpConnection::Ptr& conn){
 void TcpServer::handleWrite(const TcpConnection::Ptr& conn){
     // try to flush output buffer
     auto &out = conn->outputBuffer();
-    const char* data = out.peek(); // may be nullptr
     size_t remain = out.readableBytes();
+    if (remain == 0) {
+        // unsubscribe to EPOLLOUT
+        poller.modFd(conn->getFd(), EPOLLIN | EPOLLET);
+        return;
+    } 
+    const char* data;
     while(remain>0){
         //no need to use threadpool to write to socket
+        data = out.peek();
+        remain = out.readableBytes();
         ssize_t n = ::send(conn->getFd(), data, remain, 0);
         if(n>0){ 
             //move data that has been written out of the buffer
             out.retrieve((size_t)n); 
-            data = out.peek(); 
-            remain = out.readableBytes(); 
+            remain = out.readableBytes();
         }
         else if(n==-1){ 
             //output buffer is full
@@ -136,6 +144,9 @@ void TcpServer::handleWrite(const TcpConnection::Ptr& conn){
         }
     }
     //write complete
+    if (out.readableBytes() == 0) {
+        poller.modFd(conn->getFd(), EPOLLIN | EPOLLET); // 不关注 EPOLLOUT
+}
 }
 
 void TcpServer::handleClose(const TcpConnection::Ptr& conn){
@@ -144,4 +155,7 @@ void TcpServer::handleClose(const TcpConnection::Ptr& conn){
     conns.erase(fd);
     if(conn->onClose) conn->onClose(conn);
     ::close(fd);
+}
+void TcpServer::enableWriting(const TcpConnection::Ptr& conn){
+    poller.modFd(conn->getFd(), EPOLLIN | EPOLLOUT | EPOLLET);
 }

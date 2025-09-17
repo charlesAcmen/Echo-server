@@ -21,6 +21,8 @@ int main(int argc, char** argv){
         [&server](const TcpConnection::Ptr& conn, const std::string& msg){
             // Echo back (append to output buffer and let main loop flush)
             conn->outputBuffer().append(msg.data(), msg.size());
+            server.enableWriting(conn);
+
         };
     server.start();
     return 0;
