@@ -36,13 +36,15 @@ void ThreadPool::workerLoop(){
         { 
             //unique lock works with condition_variable
             std::unique_lock<std::mutex> lk(m); 
-            //lambda when true will wake up
+            //wake up after lambda return true
             /*
                 equals to:
                 while(!predicate()){
                     cv.wait(lk);
                 }
             */
+            //if returned false,wait function will release the mutex lock related to lk,which is
+            //the one on m,enabling tasks.push()
             cv.wait(lk, [this]{ return stop || !tasks.empty(); }); 
             //if stop and no tasks, exit
             if(stop && tasks.empty()) return; 
