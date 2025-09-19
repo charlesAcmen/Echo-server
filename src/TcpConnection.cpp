@@ -1,5 +1,12 @@
 #include "TcpConnection.h"
-TcpConnection::TcpConnection(int fd): fd(fd){}
+#include "Logger.h"
+#include <unistd.h>
+TcpConnection::TcpConnection(int fd): fd(fd){
+    this->onClose =
+        [this](const Ptr& conn){
+            Logger::INFO("connection closed fd=" + std::to_string(conn->fd));
+        };
+}
 TcpConnection::~TcpConnection(){ 
     if(fd!=-1) 
         close(fd); 

@@ -54,7 +54,6 @@ int EpollPoller::wait(int timeoutMs){
     } else if (numEvents == (int)events.size()) {
         //returned number of events is equal to the size of the events array, we may have more events to handle
         events.resize(events.size() * 2);
-        Logger::INFO("Expanded events array to: " + std::to_string(events.size()));
     }
     
     return numEvents;

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
+<tsung loglevel="notice" dumptraffic="false">
+  <clients>
+    <!-- 在本机上运行负载生成器 -->
+    <!-- controller下面控制多个负载生成器，本身也可以作为负载生成器 -->
+    <client host="localhost" use_controller_vm="true" maxusers="5000"/>
+  </clients>
+
+  <servers>
+    <!-- 连接 echo server -->
+    <server host="127.0.0.1" port="9000" type="tcp"/>
+  </servers>
+
+  <load>
+    <!-- 30秒内逐步增加 1000 个连接 -->
+    <arrivalphase phase="1" duration="300" unit="second">
+      <users maxnumber="3000" interarrival="0.03" unit="second"/>
+    </arrivalphase>
+  </load>
+
+   <sessions>
+    <!-- session.type 要用 ts_raw（ts_ 前缀），表示使用 raw 插件 -->
+    <session name="connect_only" probability="100" type="ts_raw">
+      <transaction name="data">
+        <request>
+          <raw data="hello" ack="local"></raw>
+        </request>
+      </transaction>
+      <!-- 把连接保持一段时间（示例 600 秒），期间连接会保持打开 -->
+      <thinktime value="600"/>
+    </session>
+  </sessions>
+</tsung>

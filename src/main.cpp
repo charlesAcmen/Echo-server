@@ -13,16 +13,14 @@ int main(int argc, char** argv){
     // register callbacks
     server.onConnection = 
         [](const TcpConnection::Ptr& conn){ 
-            Logger::INFO(
-                "New connection fd=" + std::to_string(conn->getFd())
-            ); 
+            Logger::INFO("new connection fd=" + std::to_string(conn->getFd())); 
         };
     server.onMessage = 
         [&server](const TcpConnection::Ptr& conn, const std::string& msg){
             // Echo back (append to output buffer and let main loop flush)
             conn->outputBuffer().append(msg.data(), msg.size());
+            //only enable output i.e. writing when output buffer is not full
             server.enableWriting(conn);
-
         };
     server.start();
     return 0;

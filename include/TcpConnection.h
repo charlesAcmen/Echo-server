@@ -2,7 +2,6 @@
 #include "Buffer.h"
 #include <functional>
 #include <memory>
-#include <unistd.h>
 
 class TcpConnection {
     public:

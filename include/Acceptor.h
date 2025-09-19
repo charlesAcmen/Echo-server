@@ -20,7 +20,6 @@ inline int setNonBlocking(int fd){
         Logger::ERROR("fcntl F_SETFL failed");
         return -1;
     }
-    Logger::INFO("Set non-blocking mode for fd: " + std::to_string(fd));
     return 0;
 }
 

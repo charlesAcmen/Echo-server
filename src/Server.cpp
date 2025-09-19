@@ -119,6 +119,7 @@ void TcpServer::handleWrite(const TcpConnection::Ptr& conn){
     size_t remain = out.readableBytes();
     if (remain == 0) {
         // unsubscribe to EPOLLOUT
+        // otherwise when every time epoll triggers event write,all connections will be in busy loop
         poller.modFd(conn->getFd(), EPOLLIN | EPOLLET);
         return;
     } 
@@ -146,13 +147,15 @@ void TcpServer::handleWrite(const TcpConnection::Ptr& conn){
     //write complete
     if (out.readableBytes() == 0) {
         poller.modFd(conn->getFd(), EPOLLIN | EPOLLET); // 不关注 EPOLLOUT
-}
+    }
 }
 
 void TcpServer::handleClose(const TcpConnection::Ptr& conn){
     int fd = conn->getFd();
     poller.delFd(fd);
     conns.erase(fd);
+    //onClose is defined in connection class not server,cause server serves as factory or organizer
+    //which does not pay attention to details about each connections
     if(conn->onClose) conn->onClose(conn);
     ::close(fd);
 }
