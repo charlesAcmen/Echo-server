@@ -3,3 +3,5 @@
 
 # VSCode 配置
 /.vscode/
+
+/erl_crash.dump
