@@ -124,6 +124,7 @@ void TcpServer::handleWrite(const TcpConnection::Ptr& conn){
         return;
     } 
     const char* data;
+    //Edge trigger:write until EAGAIN(output buffer full)
     while(remain>0){
         //no need to use threadpool to write to socket
         data = out.peek();
@@ -131,14 +132,17 @@ void TcpServer::handleWrite(const TcpConnection::Ptr& conn){
         ssize_t n = ::send(conn->getFd(), data, remain, 0);
         if(n>0){ 
             //move data that has been written out of the buffer
+            //retrieve function of buffer class should be public,to update state
             out.retrieve((size_t)n); 
             remain = out.readableBytes();
         }
         else if(n==-1){ 
             //output buffer is full
             if(errno==EAGAIN || errno==EWOULDBLOCK) 
+                //send next time when EPOLLOUT again
                 break; 
             else {
+                //errno==ECONNRESET || EPIPE ...
                 handleClose(conn); 
                 break; 
             } 
@@ -146,6 +150,7 @@ void TcpServer::handleWrite(const TcpConnection::Ptr& conn){
     }
     //write complete
     if (out.readableBytes() == 0) {
+        //important:prevent from busy loop
         poller.modFd(conn->getFd(), EPOLLIN | EPOLLET); // 不关注 EPOLLOUT
     }
 }

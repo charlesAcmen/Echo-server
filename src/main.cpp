@@ -21,6 +21,9 @@ int main(int argc, char** argv){
             conn->outputBuffer().append(msg.data(), msg.size());
             //only enable output i.e. writing when output buffer is not full
             server.enableWriting(conn);
+
+            Logger::INFO("echo from fd=" + std::to_string(conn->getFd()) + 
+                ", msg=\"" + msg + "\"");
         };
     server.start();
     return 0;
