@@ -13,11 +13,12 @@ set(SOURCE_FILES
     src/TcpConnection.cpp
     src/Server.cpp
     src/main.cpp
+    src/logger/Logger.cpp
 )
 
 add_executable(epoll_echo_server ${SOURCE_FILES})
 
 target_include_directories(epoll_echo_server PRIVATE ${CMAKE_SOURCE_DIR}/include)
-
+# target_include_directories(epoll_echo_server PRIVATE ${CMAKE_SOURCE_DIR}/include/logger)
 
 

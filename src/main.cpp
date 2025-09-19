@@ -1,11 +1,11 @@
-#include "Logger.h"
+#include "logger/Logger.h"
 #include <iostream>
 #include "Server.h"
 
 int main(int argc, char** argv){
     uint16_t port = 9000;
     if(argc>1) port = (uint16_t)atoi(argv[1]);
-    Logger::INFO("Starting echo server on port " + std::to_string(port));
+    AsyncLogger::getLogger().log("Starting echo server on port " + std::to_string(port));
     // Create server with 4 worker threads
     TcpServer server(port, 4);
 
@@ -13,7 +13,7 @@ int main(int argc, char** argv){
     // register callbacks
     server.onConnection = 
         [](const TcpConnection::Ptr& conn){ 
-            Logger::INFO("new connection fd=" + std::to_string(conn->getFd())); 
+            AsyncLogger::getLogger().log("new connection fd=" + std::to_string(conn->getFd())); 
         };
     server.onMessage = 
         [&server](const TcpConnection::Ptr& conn, const std::string& msg){
@@ -22,7 +22,7 @@ int main(int argc, char** argv){
             //only enable output i.e. writing when output buffer is not full
             server.enableWriting(conn);
 
-            Logger::INFO("echo from fd=" + std::to_string(conn->getFd()) + 
+            AsyncLogger::getLogger().log("echo from fd=" + std::to_string(conn->getFd()) + 
                 ", msg=\"" + msg + "\"");
         };
     server.start();

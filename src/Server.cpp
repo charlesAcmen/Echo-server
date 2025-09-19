@@ -1,5 +1,5 @@
 #include "Server.h"
-#include "Logger.h"
+#include "logger/Logger.h"
 #include <iostream>
 TcpServer::TcpServer(uint16_t port, size_t workerThreads)
         : acceptor(port), poller(), pool(workerThreads){
@@ -10,11 +10,11 @@ TcpServer::TcpServer(uint16_t port, size_t workerThreads)
 }
 //single thread event loop handles all connections
 void TcpServer::start(){
-    Logger::INFO("Server start loop");
+    AsyncLogger::getLogger().log("Server start loop");
     while(true){
         int n = poller.wait(1000);
         if(n<0) { 
-            Logger::ERROR("epoll wait error"); 
+            AsyncLogger::getLogger().log("epoll wait error"); 
             break; 
         }
         auto *events = poller.getEvents();
@@ -50,7 +50,7 @@ void TcpServer::start(){
                 else if(ev & EPOLLOUT) { 
                     handleWrite(conn); 
                 }else{
-                    Logger::WARN("Unknown event: " + std::to_string(ev));
+                    AsyncLogger::getLogger().log("Unknown event: " + std::to_string(ev));
                 }
             }
         }

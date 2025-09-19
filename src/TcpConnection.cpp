@@ -1,10 +1,10 @@
 #include "TcpConnection.h"
-#include "Logger.h"
+#include "logger/Logger.h"
 #include <unistd.h>
 TcpConnection::TcpConnection(int fd): fd(fd){
     this->onClose =
         [this](const Ptr& conn){
-            Logger::INFO("connection closed fd=" + std::to_string(conn->fd));
+            AsyncLogger::getLogger().log("connection closed fd=" + std::to_string(conn->fd));
         };
 }
 TcpConnection::~TcpConnection(){ 

@@ -1,5 +1,5 @@
 #include "ThreadPool.h"
-#include "Logger.h"
+#include "logger/Logger.h"
 #include <iostream>
 ThreadPool::ThreadPool(size_t n): stop(false) {
     for (size_t i=0;i<n;i++) 
@@ -54,6 +54,6 @@ void ThreadPool::workerLoop(){
         }//lock released
         try{ 
             task(); 
-        }catch(...){ Logger::WARN("task threw"); }
+        }catch(...){ AsyncLogger::getLogger().log("task threw"); }
     }
 }

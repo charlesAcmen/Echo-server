@@ -1,10 +1,10 @@
 #include "Acceptor.h"  
-#include <iostream>
+#include "logger/Logger.h"
 Acceptor::Acceptor(uint16_t port){
     //create tcp socket,AF_INET:ipv4,SOCK_STREAM:tcp
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if(fd==-1){
-        Logger::ERROR("tcp socket creation failed");
+        AsyncLogger::getLogger().log("tcp socket creation failed");
         throw std::runtime_error("socket: CREATION");
     }
     int on = 1;
@@ -12,7 +12,7 @@ Acceptor::Acceptor(uint16_t port){
     //fast reuse address and port in TIME_WAIT state
     if(setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) == -1){
         close(fd);
-        Logger::ERROR("setsockopt SO_REUSEADDR failed");
+        AsyncLogger::getLogger().log("setsockopt SO_REUSEADDR failed");
         throw std::runtime_error("setsockopt: (SO_REUSEADDR)");
     }
     struct sockaddr_in addr{}; 
@@ -35,7 +35,7 @@ Acceptor::Acceptor(uint16_t port){
     //no blocking on accept,recv,send
     setNonBlocking(fd);      
     listenFd = fd;
-    Logger::INFO("server listening on port " + std::to_string(port));  
+    AsyncLogger::getLogger().log("server listening on port " + std::to_string(port));  
 }
 Acceptor::~Acceptor(){ 
     if(listenFd!=-1)

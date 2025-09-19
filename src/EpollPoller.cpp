@@ -1,5 +1,5 @@
 #include "EpollPoller.h"
-#include "Logger.h"
+#include "logger/Logger.h"
 #include <stdexcept>
 EpollPoller::EpollPoller(){ 
     // create epoll instance
@@ -40,7 +40,7 @@ void EpollPoller::delFd(int fd){
 //return number of events
 int EpollPoller::wait(int timeoutMs){ 
     if (timeoutMs < -1) {
-        Logger::WARN("Invalid timeout value: " + std::to_string(timeoutMs));
+        AsyncLogger::getLogger().log("Invalid timeout value: " + std::to_string(timeoutMs));
         timeoutMs = -1;  // 无限等待
     }
     
@@ -48,7 +48,7 @@ int EpollPoller::wait(int timeoutMs){
     
     if (numEvents == -1) {
         if (errno != EINTR) {  // 忽略信号中断
-            Logger::ERROR("epoll_wait error");
+            AsyncLogger::getLogger().log("epoll_wait error");
         }
         return -1;
     } else if (numEvents == (int)events.size()) {
