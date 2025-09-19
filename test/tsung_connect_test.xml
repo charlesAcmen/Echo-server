@@ -14,8 +14,8 @@
 
   <load>
     <!-- 30秒内逐步增加 1000 个连接 -->
-    <arrivalphase phase="1" duration="300" unit="second">
-      <users maxnumber="3000" interarrival="0.03" unit="second"/>
+    <arrivalphase phase="1" duration="30" unit="second">
+      <users maxnumber="3000" interarrival="0.01" unit="second"/>
     </arrivalphase>
   </load>
 

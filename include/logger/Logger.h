@@ -28,7 +28,10 @@ class ConsoleSink : public Sink {
 
 class AsyncLogger {
     public:
-        AsyncLogger(std::shared_ptr<Sink> sink = std::make_shared<ConsoleSink>(),size_t workerThreads = 1);
+        AsyncLogger(
+            std::shared_ptr<Sink> sink = std::make_shared<ConsoleSink>(),
+            size_t workerThreads = 1);
+        ~AsyncLogger();
         static AsyncLogger& getLogger();
         void log(const std::string& text);
     private:
@@ -37,6 +40,7 @@ class AsyncLogger {
         AsyncLogger(const AsyncLogger&) = delete;
         AsyncLogger& operator=(const AsyncLogger&) = delete;
 
+        void processQueue();
 
         //inline:C++17,initialize static member directly in class reference
         //cannot use static AsyncLogger& g_logger;cause 
@@ -49,3 +53,9 @@ class AsyncLogger {
         std::shared_ptr<Sink> sink;
         ThreadPool pool;
 };
+
+
+
+
+
+
