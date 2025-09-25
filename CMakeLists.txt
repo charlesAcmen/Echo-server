@@ -19,6 +19,5 @@ set(SOURCE_FILES
 add_executable(epoll_echo_server ${SOURCE_FILES})
 
 target_include_directories(epoll_echo_server PRIVATE ${CMAKE_SOURCE_DIR}/include)
-# target_include_directories(epoll_echo_server PRIVATE ${CMAKE_SOURCE_DIR}/include/logger)
 
 

@@ -1,5 +1,10 @@
 #include "Acceptor.h"  
 #include "logger/Logger.h"
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <stdexcept>
+#include <unistd.h>
 Acceptor::Acceptor(uint16_t port){
     //create tcp socket,AF_INET:ipv4,SOCK_STREAM:tcp
     int fd = socket(AF_INET, SOCK_STREAM, 0);
